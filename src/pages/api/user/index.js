@@ -48,21 +48,31 @@ export default function handler(req, res) {
 
 const listUser = async (req, res) => {
     try{
-        //los datos vienen del req.body
+        
         console.log(req.body);
-        //guardar cliente
-    const can = await db.User.findAll({
         
-    });
-        
-        return res.json(can)
-    
+        const users = await db.User.findAll({
+            include: [
+                {
+                    model: db.Status,
+                    as: 'statusId',
+                    attributes: ['rolName'],
+                },
+                {
+                    model: db.Courses,
+                    as: 'courses',
+                    attributes: ['name'],
+                },
+            ],
+            attributes: ['id', 'name', 'lastName', 'phone', 'email', 'address', 'status', 'area'],
+        });
+
+        return res.json(users);
     }catch(error){
         console.log(error);
         let errors = []
 
         if(error.errors){
-            //extrae la info
             errors = error.errors.map((item) => ({
                 error: item.message, 
                 field: item.path,
