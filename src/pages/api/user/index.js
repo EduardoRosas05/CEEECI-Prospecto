@@ -56,7 +56,7 @@ const listUser = async (req, res) => {
                 {
                     model: db.Status,
                     as: 'statusId',
-                    attributes: ['rolName'],
+                    attributes: ['name'],
                 },
                 {
                     model: db.Courses,
@@ -107,7 +107,7 @@ const deleteUser = async (req,res) => {
 const updateUser = async (req,res) => {
 
     try{
-        let {id} = req.query;
+        let {id} = req.body;
         await db.User.update({...req.body},
             {
             where :{ id : id }
