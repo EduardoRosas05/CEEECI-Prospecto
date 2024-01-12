@@ -1,5 +1,5 @@
 'use strict';
-
+import mysql2 from "mysql2";
 const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
@@ -7,6 +7,9 @@ const process = require('process');
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
 const config = require(__dirname + '/../config/config.json')[env];
+if(config.dialect === "mysql"){
+  config.dialectModule = mysql2
+}
 const db = {};
 
 let sequelize;
@@ -16,20 +19,13 @@ if (config.use_env_variable) {
   sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
 
-fs
-  .readdirSync(__dirname)
-  .filter(file => {
-    return (
-      file.indexOf('.') !== 0 &&
-      file !== basename &&
-      file.slice(-3) === '.js' &&
-      file.indexOf('.test.js') === -1
-    );
-  })
-  .forEach(file => {
-    const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
-    db[model.name] = model;
-  });
+import status from './status';
+import courses from './courses';
+import user from './user';
+
+db.Status = status(sequelize, Sequelize.DataTypes);
+db.Courses = courses(sequelize, Sequelize.DataTypes);
+db.User = user(sequelize, Sequelize.DataTypes);
 
 Object.keys(db).forEach(modelName => {
   if (db[modelName].associate) {
